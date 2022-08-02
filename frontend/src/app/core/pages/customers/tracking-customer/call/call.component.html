@@ -1,0 +1,105 @@
+<div class="card">
+
+  <div class="card-header">
+    <h3 class="card-title mb-0">Lista de Llamadas</h3>
+    <div class="card-tools">
+      <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal_default">
+        Nueva Llamada
+      </button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="load_data">
+    <div class="text-center m-4">
+      <span>Cargando datos...</span>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!load_data">
+    <div *ngIf="this.calls.length == 0" class="text-center m-4">
+      <span>No hay resultados que mostrar.</span>
+    </div>
+
+    <div *ngIf="this.calls.length >= 1">
+      <div class="card-body p-0">
+        <ul *ngFor="let item of calls | paginate: { itemsPerPage: 5, currentPage: p }"class="products-list product-list-in-card pl-2 pr-2">
+          <li class="item">
+            <div class="product-img">
+              <img [src]="path + item.advisor.image" class="rounded-circle img-size-50" />
+            </div>
+            <div class="product-info p-2">
+              <a class="product-title">
+                {{ item.advisor.full_name | titlecase }} |
+                {{ item.date | date }} a las {{ item.time }}
+                <span class="text-muted font-weight-normal float-right">{{ item.created_at | time }}</span>
+              </a>
+              <span class="product-description">
+                <span class="text-primary">{{ item.result }}</span> |
+                {{ item.note || "Sin comentarios" }}
+              </span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="card-footer text-center">
+        <pagination-controls previousLabel="Anterior" nextLabel="Siguiente" (pageChange)="p = $event"></pagination-controls>
+      </div>
+    </div>
+  </ng-container>
+  
+</div>
+
+<div class="modal fade" id="modal_default">
+  <div class="modal-dialog modal-dialog-centered">
+    <form (ngSubmit)="register()" [formGroup]="myForm" class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title mb-0">Registrar Llamada</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <section>
+          <div class="form-group">
+            <label>Fecha</label>
+            <input formControlName="date" type="date" class="form-control" />
+            <small *ngIf="validators('date')" class="text-danger">
+              Este campo es obligatorio.
+            </small>
+          </div>
+          <div class="form-group">
+            <label>Hora</label>
+            <input formControlName="time" type="time" class="form-control" />
+            <small *ngIf="validators('time')" class="text-danger">
+              Este campo es obligatorio.
+            </small>
+          </div>
+          <div class="form-group">
+            <label>Resultado</label>
+            <select formControlName="result" class="form-control">
+              <option value="" selected disabled>Seleccionar</option>
+              <option value="Ocupado">Ocupado</option>
+              <option value="Conectado">Conectado</option>
+              <option value="Dejo un mensaje">Dejo un mensaje</option>
+              <option value="Sin respuesta">Sin respuesta</option>
+              <option value="Número Incorrecto">Número Incorrecto</option>
+              <option value="Proxima llamada">Proxima llamada</option>
+              <option value="Venta cerrada">Venta cerrada</option>
+            </select>
+            <small *ngIf="validators('result')" class="text-danger">
+              Este campo es obligatorio.
+            </small>
+          </div>
+          <div class="form-group">
+            <label>Nota</label>
+            <textarea formControlName="note" class="form-control" rows="4" placeholder="Alguna nota o información"></textarea>
+          </div>
+        </section>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="submit" class="btn btn-primary">Registrar</button>
+      </div>
+    </form>
+  </div>
+</div>

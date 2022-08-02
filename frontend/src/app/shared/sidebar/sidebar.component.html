@@ -1,0 +1,42 @@
+<aside class="main-sidebar sidebar-dark-lightblue elevation-4">
+  
+    <a routerLink="/" class="brand-link">
+      <img src="assets/img/template/icono.png" alt="Logo" class="brand-image" style="opacity: .8">
+      <span class="brand-text font-weight-light">AdminLTE 3</span>
+    </a>
+
+    <div class="sidebar">
+
+      <div *ngIf="user" class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img [src]="path + user.image" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a routerLink="/" class="d-block">{{ user.first_name.split(' ')[0] | titlecase }} {{ user.last_name.split(' ')[0] | titlecase }}</a>
+        </div>
+      </div>
+
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item">
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}" class="nav-link">
+            <i class="nav-icon fas fa-home"></i>
+            <p>
+              Home
+            </p>
+          </a>
+          </li>
+
+          <li *ngFor="let item of sidebar" class="nav-item">
+            <a [routerLink]="[item.path]" routerLinkActive="active" class="nav-link">
+              <i [class]="'nav-icon ' + item.icon"></i>
+              <p>
+                {{ item.title }}
+              </p>
+            </a>
+          </li>
+
+        </ul>
+      </nav>
+    </div>
+</aside>

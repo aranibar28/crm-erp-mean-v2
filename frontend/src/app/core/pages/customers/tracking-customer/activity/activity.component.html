@@ -1,0 +1,51 @@
+<div class="card">
+
+  <div class="card-header">
+    <h3 class="card-title mb-0">Actividades Recientes</h3>
+    <div class="card-tools">
+      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+        <i class="fas fa-minus"></i>
+      </button>
+      <button type="button" class="btn btn-tool" data-card-widget="remove">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="load_data">
+    <div class="text-center m-4">
+      <span>Cargando datos...</span>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!load_data">
+    <div *ngIf="this.activities.length == 0" class="text-center m-4">
+      <span>No hay resultados que mostrar.</span>
+    </div>
+    <ng-container *ngIf="this.activities.length >= 1">
+      <div class="card-body p-0">
+        <ul *ngFor="let item of activities | paginate: { itemsPerPage: 4, currentPage: p }" class="products-list product-list-in-card pl-2 pr-2">
+          <li class="item">
+            <div class="product-img">
+              <img *ngIf="item.type == 'Llamada'" class="img-size-50" src="assets/img/resources/call.png"/>
+              <img *ngIf="item.type == 'Correo'" class="img-size-50" src="assets/img/resources/mail.png"/>
+              <img *ngIf="item.type == 'Tarea'" class="img-size-50" src="assets/img/resources/task.png"/>
+              <img *ngIf="item.type == 'Nota'" class="img-size-50" src="assets/img/resources/note.png"/>
+            </div>
+            <div class="product-info p-2">
+              <a class="product-title">
+                {{ item.advisor.full_name | titlecase }}
+                <span class="text-muted font-weight-normal float-right">{{item.created_at | time}}</span>
+              </a>
+              <span class="product-description">{{ item.activity }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="card-footer text-center">
+        <pagination-controls previousLabel="Anterior" nextLabel="Siguiente" (pageChange)="p = $event"></pagination-controls>
+      </div>
+    </ng-container>
+  </ng-container>
+  
+</div>

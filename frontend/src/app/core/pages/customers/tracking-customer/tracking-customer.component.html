@@ -1,0 +1,81 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="card card-primary card-outline">
+        <div class="card-body box-profile">
+          <div class="text-center">
+            <img
+              class="profile-user-img img-fluid img-circle"
+              [src]="path + customer.image"
+              alt="User profile picture"
+            />
+          </div>
+          <h3 class="profile-username text-center mt-2 mb-0">
+            {{ customer.first_name | titlecase }} <br>
+            {{ customer.last_name | titlecase }}
+          </h3>
+          <p class="text-muted text-center">{{ customer.type }}</p>
+          <ul class="list-group list-group-unbordered mb-3">
+            <li *ngIf="customer.email"class="list-group-item">
+              <b>Correo</b> <a class="float-right">{{ customer.email.substring(0, customer.email.lastIndexOf("@")) }}</a>
+            </li>
+            <li class="list-group-item">
+              <b>Telefono</b> <a class="float-right">{{ customer.phone }}</a>
+            </li>
+            <li class="list-group-item">
+              <b>DNI</b> <a class="float-right">{{ customer.dni }}</a>
+            </li>
+            <li class="list-group-item">
+              <b>Creado</b> <a class="float-right">{{ customer.created_at | date: 'dd/MM/YYYY' }}</a>
+            </li>
+          </ul>
+          <a class="btn btn-primary btn-block">Inscripción</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-9">
+      <div class="card">
+        <div class="card-header p-2">
+          <ul class="nav nav-pills justify-content-center justify-content-md-start ">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="dash"  routerLinkActive="active">
+                <i class="fas fa-chart-line"></i><span class="d-none ml-md-2 d-md-inline">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="activity" routerLinkActive="active">
+                <i class="fas fa-child"></i><span class="d-none ml-md-2 d-md-inline">Actividades</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="call" routerLinkActive="active">
+                <i class="fas fa-phone-alt"></i><span class="d-none ml-md-2 d-md-inline">Llamadas</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="mail" routerLinkActive="active">
+                <i class="fas fa-envelope"></i><span class="d-none ml-md-2 d-md-inline">Correos</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="task" routerLinkActive="active">
+                <i class="fas fa-tasks"></i><span class="d-none ml-md-2 d-md-inline">Tareas</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="interest" routerLinkActive="active">
+                <i class="fas fa-heart"></i><span class="d-none ml-md-2 d-md-inline">Intereses</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="tab-content">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

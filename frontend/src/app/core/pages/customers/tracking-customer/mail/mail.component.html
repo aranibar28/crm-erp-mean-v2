@@ -1,0 +1,94 @@
+<div class="card">
+
+  <div class="card-header">
+    <h3 class="card-title mb-0">Lista de Correos</h3>
+    <div class="card-tools">
+      <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal_default">
+        Nuevo Correo
+      </button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="load_data">
+    <div class="text-center m-4">
+      <span>Cargando datos...</span>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!load_data">
+    <div *ngIf="this.mails.length == 0" class="text-center m-4">
+      <span>No hay resultados que mostrar.</span>
+    </div>
+    <div *ngIf="this.mails.length >= 1">
+      <div class="card">
+        <div class="card-body table-responsive">
+          <table class="table table-bordered table-hover text-center">
+            <thead>
+              <tr class="bg-dark">
+                <th>#</th>
+                <th>Emitido por</th>
+                <th>Asunto</th>
+                <th>Enviado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container
+                *ngFor="let item of mails | paginate: { itemsPerPage: 5, currentPage: p }">
+                <tr data-widget="expandable-table" aria-expanded="false">
+                  <td><i class="fas fa-envelope"></i></td>
+                  <td>{{ item.advisor.full_name | titlecase }}</td>
+                  <td>{{ item.subject }}</td>
+                  <td>{{ item.created_at | time }}</td>
+                </tr>
+                <tr class="expandable-body d-none">
+                  <td class="text-left" colspan="5">
+                    <div [innerHTML]="item.message | sanitizing" style="display: none"></div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer text-center">
+        <pagination-controls previousLabel="Anterior" nextLabel="Siguiente" (pageChange)="p = $event"></pagination-controls>
+      </div>
+    </div>
+  </ng-container>
+
+</div>
+
+<div class="modal fade" id="modal_default">
+  <div class="modal-dialog modal-dialog-centered">
+    <form (ngSubmit)="register()" [formGroup]="myForm" class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title mb-0">Enviar Correo</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <section>
+          <div class="form-group">
+            <label>Asunto</label>
+            <input formControlName="subject" type="text" class="form-control" />
+            <small *ngIf="validators('subject')" class="text-danger">
+              Este campo es obligatorio.
+            </small>
+          </div>
+          <div class="form-group">
+            <label>Mensaje</label>
+            <tinymce formControlName="message" [config]="config"></tinymce>
+            <small *ngIf="validators('message')" class="text-danger">
+              Este campo es obligatorio.
+            </small>
+          </div>
+        </section>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+      </div>
+    </form>
+  </div>
+</div>

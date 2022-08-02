@@ -1,0 +1,110 @@
+/* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.content {
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+.ngx-pagination {
+  margin-bottom: 0 !important;
+  padding-left: 0 !important;
+  .current {
+    background-color: #464e5f !important;
+  }
+}
+
+.d-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pointer {
+  cursor: pointer;
+  user-select: none;
+}
+
+.w50 {
+  width: 50px;
+}
+
+.w100 {
+  width: 100px;
+}
+
+.w150 {
+  width: 150px;
+}
+
+td {
+  vertical-align: middle !important;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 9px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.img-upload {
+  max-width: 250px;
+  height: 250px;
+}
+
+.img-profile {
+  width: 50px;
+  border-radius: 100%;
+  border: 2px solid #444;
+  margin: 0 0 0 -1.5rem;
+}
+
+.card-container {
+  width: 100%;
+
+  .card-input-element {
+    display: none;
+  }
+
+  .card-input {
+    max-width: 100% !important;
+    margin: 0px;
+    padding: 0px;
+
+    .card-input-title {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 1rem 0.5rem 1rem;
+    }
+
+    .card-input-text {
+      font-weight: normal;
+      padding: 0 1rem 1rem;
+    }
+  }
+
+  .card-input:hover {
+    cursor: pointer;
+  }
+
+  .card-input-element:checked + .card-input {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    background: #007bff linear-gradient(180deg, #268fff, #007bff) repeat-x !important;
+    color: white !important;
+  }
+}

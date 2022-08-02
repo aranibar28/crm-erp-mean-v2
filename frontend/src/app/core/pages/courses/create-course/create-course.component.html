@@ -1,0 +1,56 @@
+<div class="card card-default">
+
+  <div class="d-flex justify-content-between align-items-center p-2 p-md-4">
+    <h3 class="card-title mb-0">Registrar Curso</h3>
+    <div class="card-tools">
+      <div class="input-group input-group-sm" style="max-width: 250px">
+        <div class="input-group-append">
+          <button routerLink="/courses" type="button" class="btn btn-warning">
+            <i class="fas fa-angle-left mr-2"></i>Regresar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form (ngSubmit)="register()" [formGroup]="myForm">
+    <div class="card-body pt-0">
+      <div class="row">
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Título</label>
+            <input formControlName="title" type="text" class="form-control" placeholder="Ingrese un título" />
+            <small *ngIf="validators('title')" class="text-danger">Este campo es obligatorio.</small>
+          </div>
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea formControlName="description" class="form-control" rows="8" placeholder="Ingrese una descripción"></textarea>
+            <small *ngIf="validators('description')" class="text-danger">Este campo es obligatorio.</small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <div class="text-center mt-4">
+              <img [src]="imgSelected" id="#input-imgx" class="mb-2 img-upload" />
+              <label class="custom-file-upload d-flex flex-column">
+                <input (change)="fileChanged($event)" id="#input-file" type="file" />Subir Imagen
+              </label>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card-footer d-flex justify-content-end">
+      <button *ngIf="!load_btn" type="submit" class="btn btn-success d-center">
+        Registrar<i class="fas fa-save ml-2"></i>
+      </button>
+      <button *ngIf="load_btn" type="button" disabled class="btn btn-warning d-center">
+        Registrando<i class="fas fa-sync fa-spin ml-2"></i>
+      </button>
+    </div>
+  </form>
+</div>

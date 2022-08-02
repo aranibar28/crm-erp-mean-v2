@@ -1,0 +1,137 @@
+<ng-container *ngIf="load_data">
+    <div class="text-center m-4">
+        <span>Cargando  datos.</span>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="!load_data">
+  <ng-container *ngIf="!data">
+    <div class="text-center m-4">
+        <span>No se encontró nada.</span>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="data">
+    <div class="card card-default">
+
+        <div class="d-flex justify-content-between align-items-center border-bottom py-3 px-3">
+          <h3 class="card-title mb-0">Ciclos expirados del curso {{ course.title }}</h3>
+          <div class="card-tools">
+            <div class="input-group input-group-sm" style="max-width: 750px">
+              <div class="input-group-append">
+                <button (click)="back()" type="button" class="btn btn-warning">
+                  <i class="fas fa-angle-left mr-2"></i>Regresar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-inline d-md-flex justify-content-between align-items-center pt-3 px-3">
+            <div class="form-group mb-0 d-flex">
+                <label class="font-weight-normal mt-2 mr-2">Nivel:</label>
+                <select (change)="search()" [(ngModel)]="filter" name="filter" class="form-control">
+                    <option value="Todos">Todos</option>
+                    <option value="Basico 1">Basico 1</option>
+                    <option value="Basico 2">Basico 2</option>
+                    <option value="Basico 3">Basico 3</option>
+                    <option value="Intermedio 1">Intermedio 1</option>
+                    <option value="Intermedio 2">Intermedio 2</option>
+                    <option value="Intermedio 2">Intermedio 3</option>
+                    <option value="Avanzado 1">Avanzado 1</option>
+                    <option value="Avanzado 2">Avanzado 2</option>
+                    <option value="Avanzado 3">Avanzado 3</option>
+                </select>
+            </div>
+            <div class="card-tools text-center mt-3 mt-md-0">
+                <a routerLink="create" class="btn bg-gradient-primary btn-sm d-block d-md-inline mt-1 mt-md-0">Nuevo ciclo</a>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <ng-container *ngFor="let item of cycles">
+                <div class="info-box bg-light mb-0">
+                    <div class="info-box-content">
+                        <div class="row text-center">
+                            <div class="col-12 col-sm-6 col-md-4">
+                                <div class="d-md-flex">
+                                    <img [src]="img_url + course.image" class="img-size-50 mr-md-5">
+                                    <div>
+                                        <span class="info-box-number text-muted mb-0">{{ item.cycle.nivel }}</span>
+                                        <span class="info-box-text text-muted">
+                                            {{ item.cycle.start_date | date }} - {{ item.cycle.final_date | date }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-md-3">
+                                <span class="info-box-number text-muted mb-0">Ciclos</span>
+                                <span class="info-box-text text-muted">
+                                    <ng-container *ngFor="let subitem of item.cycle.months; let last = last">
+                                        <span *ngIf="subitem == 1">Ene<ng-container *ngIf="!last">, </ng-container> </span>
+                                        <span *ngIf="subitem == 2">Feb<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 3">Mar<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 4">Abr<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 5">May<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 6">Jun<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 7">Jul<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 8">Ago<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 9">Sep<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 10">Oct<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 11">Nov<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 12">Dic<ng-container *ngIf="!last">, </ng-container></span>
+                                    </ng-container>
+                                </span>
+                            </div>
+                            <div class="col-12 col-sm-6 col-md-2">
+                                <span class="info-box-number text-muted mb-0">Estado</span>
+                                <span class="info-box-text text-muted">
+                                    <ng-container *ngIf="item.cycle.status">
+                                        <span (click)="change_status(item.cycle._id, item.cycle.status)" class="badge badge-success pointer">Publicado</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="!item.cycle.status">
+                                        <span (click)="change_status(item.cycle._id, item.cycle.status)" class="badge badge-warning pointer">Borrador</span>
+                                    </ng-container>
+                                </span>
+                            </div>
+                            <div class="col-12 col-sm-6 col-md-3">
+                                <span class="info-box-number text-muted mb-0">Creación</span>
+                                <span class="info-box-text text-muted">{{ item.cycle.created_at | date}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-bordered table-sm table-striped text-center mb-3">
+                    <ng-container>
+                        <thead>
+                            <th class="text-danger">Salón</th>
+                            <th class="text-danger">Horario</th>
+                            <th class="text-danger">Días</th>
+                            <th class="text-danger">Aforo</th>
+                        </thead>
+                        <tr *ngFor="let subitem of item.rooms">
+                            <td>{{ subitem.room }}</td>
+                            <td>{{ subitem.start_time }} - {{ subitem.final_time }}</td>
+                            <td>
+                                <ng-container *ngFor="let item of subitem.frequency; let ultimo = last">
+                                    <span *ngIf="!ultimo">{{item.substr(0,3)}}, </span>
+                                    <span *ngIf="ultimo">{{item.substr(0,3)}}</span>
+                                </ng-container>
+                            </td>
+                            <td>{{ subitem.students }}/{{ subitem.aforo }}</td>
+                        </tr>
+                    </ng-container>
+                    
+                </table>
+            </ng-container>
+            <ng-container *ngIf="cycles.length == 0">
+                <div class="text-center m-4">
+                    <span>No hay resultados que mostrar.</span>
+                </div>
+            </ng-container>
+        </div>
+
+
+    </div>      
+  </ng-container>
+</ng-container>

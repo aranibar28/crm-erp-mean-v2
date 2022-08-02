@@ -1,0 +1,359 @@
+<div class="row">
+    <div class="col-12 col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="align-self-center mb-0">Agregar cursos</h3>
+            </div>
+            <form (ngSubmit)="add_detail()" [formGroup]="myFormDetail" class="card-body">
+                <div class="form-group">
+                    <label>Curso</label>
+                    <select (change)="select_course($event)" formControlName="course" id="select_course" class="selectpicker form-control" data-size="7" data-live-search="true">
+                        <option value="" selected disabled>Seleccionar</option>
+                        <option *ngFor="let item of courses" [value]="item._id">{{ item.title }}</option>
+                    </select>
+                    <small *ngIf="validatorsDetails('course')" class="text-danger"> Este campo es obligatorio. </small>
+                </div>
+                <div class="form-group">
+                    <label>Ciclo</label>
+                    <div class="input-group">
+                        <input formControlName="cycle_course" type="text" class="form-control" id="input_cycle" placeholder="Buscar un ciclo" readonly>
+                        <span class="input-group-append">
+                          <button data-toggle="modal" data-target="#modal_cycle" type="button" class="btn bg-gradient-primary">Buscar</button>
+                        </span>
+                    </div>
+                    <small *ngIf="validatorsDetails('cycle_course')" class="text-danger"> Este campo es obligatorio. </small>
+                </div>
+                <div class="form-group">
+                    <label>Salones Disponibles</label>
+                    <div class="row">
+                        <div *ngIf="rooms.length == 0" class="col-12 px-2 pb-1">
+                            <p class="text-muted">Debe seleccionar <b>un ciclo</b> para poder mostrar los salones.</p>
+                        </div>
+
+                        <ng-container *ngFor="let item of rooms">
+                            <div class="col-12 col-md-6">
+                              <label class="card-container">
+                                <input *ngIf="item.aforo > item.students" (change)="select_room(item)" type="radio" name="cycle_room" class="card-input-element" />
+                                <input *ngIf="item.aforo == item.students" type="radio" name="cycle_room" disabled class="card-input-element" />
+                                  <div class="card-input bg-light border rounded">
+                                    <div [ngClass]="{ 'text-danger' : item.aforo == item.students }" class="card-input-title">
+                                        <span>{{ item.room }}</span>
+                                        <span>{{ item.students }}/{{ item.aforo }}</span>
+                                    </div>
+                                    <div [ngClass]="{ 'text-danger' : item.aforo == item.students }" class="card-input-text">
+                                        <div>Frecuencia: 
+                                            <ng-container *ngFor="let subitem of item.frequency; let ultimo = last">
+                                                <span *ngIf="!ultimo">{{subitem.substr(0,3)}}, </span>
+                                                <span *ngIf="ultimo">{{subitem.substr(0,3)}}</span>
+                                            </ng-container>
+                                        </div>
+                                        <div>Horario: {{ item.start_time }} - {{ item.final_time }}</div>
+                                    </div>
+                                  </div>
+                              </label>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>Tipo</label>
+                            <div class="input-group">
+                                <select formControlName="discount_type" class="form-control">
+                                    <option value="" selected disabled>Seleccionar</option>
+                                    <option value="Precio Fijo">Precio Fijo</option>
+                                    <option value="Porcentaje">Porcentaje</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>Valor</label>
+                            <div class="input-group">
+                                <input formControlName="discount_value" type="number" class="form-control" placeholder="0">
+                                <span class="input-group-append">
+                                    <button (click)="aply_discount()" *ngIf="detail_subtotal >= 1" class="btn btn-primary" type="button">Aplicar</button>
+                                    <button *ngIf="detail_subtotal == 0" class="btn btn-danger" type="button" disabled>Aplicar</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-between mb-6">
+                    <div class="col">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td style="vertical-align: middle;">
+                                    <h5 class="mb-0">Subtotal:<br> {{ detail_subtotal | currency: 'S/. '}}</h5>
+                                </td>
+                                <td style="vertical-align: middle;">
+                                    <h5 class="mb-0">Descuento:<br> {{ detail_discount | currency: 'S/. '}}</h5>
+                                </td>
+                                <td style="vertical-align: middle;">
+                                    <h5 class="mb-0">Total:<br> {{ detail_total | currency: 'S/. '}}</h5>
+                                </td>
+                                <td class="w50" style="vertical-align: middle;">
+                                    <button type="submit" class="btn btn-primary btn-sm btn-block"><i class="fa fa-plus"></i></button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="align-self-center mb-0">Registrar Matrícula</h3>
+            </div>
+            <form (ngSubmit)="register()" [formGroup]="myForm" class="card-body">
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <div class="input-group">
+                        <input formControlName="customer" type="text" class="form-control" id="input_customer" placeholder="Seleccionar un instructor" readonly>
+                        <span class="input-group-append">
+                          <button data-toggle="modal" data-target="#modal_customer" type="button" class="btn bg-gradient-primary"><i class="fas fa-search"></i></button>
+                        </span>
+                    </div>
+                    <small *ngIf="validators('customer')" class="text-danger"> Este campo es obligatorio. </small>
+                </div>
+                <div class="form-group">
+                    <label>Canal</label>
+                    <select formControlName="channel" class="form-control">
+                        <option value="" selected disabled>Seleccionar</option>
+                        <option value="Whatsapp">Whatsapp</option>
+                        <option value="Facebook">Facebook</option>
+                        <option value="Instagram">Instagram</option>
+                        <option value="Campaña EM">Campaña EM</option>
+                        <option value="Publicidad FB">Publicidad FB</option>
+                        <option value="Tienda">Tienda</option>
+                      </select>
+                      <small *ngIf="validators('channel')" class="text-danger"> Este campo es obligatorio. </small>
+                </div>
+                <div class="form-group">
+                    <label>Precio Matrícula</label>
+                    <input formControlName="matricula" type="text" class="form-control" placeholder="Precio matrícula">
+                    <small *ngIf="validators('matricula')" class="text-danger"> Este campo es obligatorio. </small>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <table class="table table-bordered table-sm table-striped text-center mb-0">
+                                <ng-container *ngIf="details.length == 0">
+                                    <tbody>
+                                        <td class="text-muted text-center">
+                                            La mátricula no tiene ciclos agregados.
+                                        </td>
+                                    </tbody>
+                                </ng-container>
+                                <ng-container *ngIf="details.length >= 1">
+                                    <tbody *ngFor="let item of details; let i = index">
+                                        <tr>
+                                            <td>{{ item.title_course }}</td>
+                                            <td>{{ item.title_room }}</td>
+                                            <td>
+                                                <span>{{ item.price | currency: 'S/. '}} &nbsp; 
+                                                    <del *ngIf="item.discount_value" class="text-danger">{{ item.discount_value }}</del>
+                                                </span>
+                                            </td>
+                                            <th class="text-center w50">
+                                                <span (click)="del_detail(i, item)" class="text-danger pointer"><i class="fas fa-trash-alt"></i></span>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </ng-container>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">TOTAL CURSOS</span>
+                                    <span class="info-box-number text-center text-muted mb-0">{{ amount | currency: 'S/. ' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="info-box bg-light mb-0">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">DESCUENTO</span>
+                                    <span class="info-box-number text-center text-muted mb-0">{{ discount | currency: 'S/. ' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button *ngIf="!load_btn" type="submit" class="btn bg-gradient-success btn-block btn-sm">Matricular</button>
+                    <button *ngIf="load_btn" type="button" class="btn bg-gradient-warning btn-sm" disabled>Matriculando<i class="fas fa-sync fa-spin ml-2"></i></button>
+                </div> 
+             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_customer">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title mb-0">Seleccionar Cliente</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="min-height: 560px; overflow: auto;">
+          <div class="input-group mb-3">
+            <input [(ngModel)]="filter_customer" name="filter_customer" type="text" class="form-control rounded-0" placeholder="Buscar un cliente">
+            <span class="input-group-append">
+              <button (click)="search_customers()" type="button" class="btn bg-gradient-primary"><i class="fas fa-search"></i></button>
+            </span>
+          </div>
+          <ng-container *ngIf="load_customers">
+            <div class="text-center p-2">Cargando datos...</div>
+          </ng-container>
+          <ng-container *ngIf="!load_customers">
+            <ng-container *ngIf="customers.length == 0">
+                <div class="text-center p-2">No se encontraron resultados.</div>
+              </ng-container>
+              <ng-container *ngFor="let item of customers">
+                <div class="d-flex mb-3">
+                  <img [src]="path + item.image" class="img-size-50 mr-2">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <label class="mb-0">{{ item.full_name }}</label>
+                      <span>{{ item.email }}</span>
+                      <span *ngIf="item.type == 'Prospecto'" class="badge badge-warning ml-2">Prospecto</span>
+                      <span *ngIf="item.type == 'Cliente'"class="badge badge-success ml-2">Cliente</span>
+                    </div>
+                    <button *ngIf="item.verify" (click)="select_customer(item)" class="btn bg-gradient-success btn-sm mb-0">
+                      <span class="d-none d-md-inline">Seleccionar</span>
+                      <i class="fas fa-check d-md-none"></i>
+                    </button>
+                    <button *ngIf="!item.verify" disabled class="btn bg-gradient-danger btn-sm mb-0">
+                        <span class="d-none d-md-inline">Sin&nbsp;Verificar</span>
+                        <i class="fas fa-check d-md-none"></i>
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+          </ng-container>
+        </div>
+      </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_cycle">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <form class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title mb-0">Seleccionar Ciclo</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="min-height: 560px; overflow: auto;">
+          <div class="input-group mb-3">
+            <input [(ngModel)]="filter_cycle" name="filter_cycle" type="text" class="form-control rounded-0" placeholder="Buscar ciclo por ID">
+            <span class="input-group-append">
+              <button (click)="search_cycle()" type="button" class="btn bg-gradient-primary"><i class="fas fa-search"></i></button>
+            </span>
+          </div>
+          <ng-container *ngIf="load_cycles">
+            <div class="text-center p-2">
+                <p class="text-muted">Cargando datos.</p>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="!load_cycles">
+            <div *ngIf="cycles.length == 0" class="text-center p-2">
+                <p class="text-muted">Debe seleccionar un curso para poder mostrar los salones.</p>
+            </div>
+            <ng-container *ngFor="let item of cycles">
+            <section>
+                <span class="bg-light rounded shadow py-2 px-3">
+                    <b>CÓDIGO:</b> #{{ item.cycle._id | uppercase }} - <b>PRECIO:</b> {{ item.cycle.price | currency: 'S/.' }}
+                </span>
+                <div class="info-box bg-light mb-0">
+                    <div class="info-box-content">
+                        <div class="row text-center">
+                            <div class="col-12 col-sm-6 col-md-4">
+                                <div class="d-md-flex">
+                                    <div>
+                                        <span class="info-box-number text-muted mb-0">{{ item.cycle.nivel }}</span>
+                                        <span class="info-box-text text-muted">
+                                            {{ item.cycle.start_date | date }} - {{ item.cycle.final_date | date }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-md-3">
+                                <span class="info-box-number text-muted mb-0">Ciclos</span>
+                                <span class="info-box-text text-muted">
+                                    <ng-container *ngFor="let subitem of item.cycle.months; let last = last">
+                                        <span *ngIf="subitem == 1">Ene<ng-container *ngIf="!last">, </ng-container> </span>
+                                        <span *ngIf="subitem == 2">Feb<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 3">Mar<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 4">Abr<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 5">May<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 6">Jun<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 7">Jul<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 8">Ago<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 9">Sep<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 10">Oct<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 11">Nov<ng-container *ngIf="!last">, </ng-container></span>
+                                        <span *ngIf="subitem == 12">Dic<ng-container *ngIf="!last">, </ng-container></span>
+                                    </ng-container>
+                                </span>
+                            </div>
+                            <div class="col-12 col-sm-6 col-md-2">
+                                <span class="info-box-number text-muted mb-0">Estado</span>
+                                <span class="info-box-text text-muted">
+                                    <span class="badge badge-success pointer">{{ item.cycle.status }}</span>
+                                </span>
+                            </div>
+                            <div class="col-12 col-sm-6 col-md-2">
+                                <span class="info-box-number text-muted mb-0">Creación</span>
+                                <span class="info-box-text text-muted">{{ item.cycle.created_at | date}}</span>
+                            </div>
+                            <div class="col-12 col-md-1">
+                                <a (click)="select_cycle(item)" class="btn btn-app m-0">
+                                    <i class="fas fa-check"></i> Seleccionar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <table class="table table-bordered table-sm table-striped text-center mb-4">
+                <ng-container>
+                    <thead>
+                        <th class="text-danger">Salón</th>
+                        <th class="text-danger">Horario</th>
+                        <th class="text-danger">Días</th>
+                        <th class="text-danger">Aforo</th>
+                    </thead>
+                    <tr *ngFor="let subitem of item.rooms">
+                        <td>{{ subitem.room }}</td>
+                        <td>{{ subitem.start_time }} - {{ subitem.final_time }}</td>
+                        <td>
+                            <ng-container *ngFor="let item of subitem.frequency; let ultimo = last">
+                                <span *ngIf="!ultimo">{{item.substr(0,3)}}, </span>
+                                <span *ngIf="ultimo">{{item.substr(0,3)}}</span>
+                            </ng-container>
+                        </td>
+                        <td>{{ subitem.students }}/{{ subitem.aforo }}</td>
+                    </tr>
+                </ng-container>
+                
+            </table>
+            </ng-container>
+          </ng-container>
+        </div>
+      </form>
+    </div>
+</div>

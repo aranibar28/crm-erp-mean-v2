@@ -1,0 +1,48 @@
+<div class="login-page bg-warning" style="min-height: 496.781px;">
+    <div class="login-box">
+      <div class="login-logo">
+        <img src="assets/img/template/logo_light.png" alt="Logo">
+      </div>
+
+      <div class="card">
+        <div class="card-body login-card-body">
+          <p class="login-box-msg">Inicia sesión para ingresar</p>
+    
+          <form (ngSubmit)="login()" [formGroup]="myForm">
+            <div class="mb-3">
+              <div class="input-group">
+                <input formControlName="email" type="email" class="form-control" placeholder="Email">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-envelope"></span>
+                  </div>
+                </div>
+              </div>
+              <small *ngIf="validators('email')" class="text-danger"> Este campo es obligatorio. </small>
+            </div>
+
+            <div class="mb-3">
+              <div class="input-group">
+                <input formControlName="password" type="password" class="form-control" placeholder="Password">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-lock"></span>
+                  </div>
+                </div>
+              </div>
+              <small *ngIf="validators('password')" class="text-danger"> Este campo es obligatorio. </small>
+            </div>
+            
+            <div class="row">
+              <div class="col-12">
+                <button *ngIf="!load_btn" type="submit" class="btn btn-primary btn-block d-center">Iniciar Sesión</button>
+                <button *ngIf="load_btn" type="button" class="btn btn-warning btn-block d-center" disabled>Ingresando <i class="fas fa-sync fa-spin ml-2"></i></button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+</div>

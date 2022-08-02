@@ -1,0 +1,309 @@
+<ng-container *ngIf="load_data">
+  <div class="text-center p-2">Cargando...</div>
+</ng-container>
+
+<ng-container *ngIf="!load_data">
+
+  <ng-container *ngIf="!data">
+    NOT FOUND
+  </ng-container>
+
+  <ng-container *ngIf="data">
+
+    <section class="card">
+      <div class="d-flex justify-content-between align-items-center border-bottom py-3 px-3">
+        <h3 class="mb-0">Actualizar ciclo de {{ course.title }}</h3>
+        <button (click)="back()" type="button" class="btn bg-gradient-warning btn-sm">
+          <i class="fas fa-angle-left mr-2"></i>Regresar
+        </button>
+      </div>
+      <div class="card-body">
+        <form (ngSubmit)="update()" [formGroup]="myForm" class="row">
+            <div class="form-group col-12 col-sm-6 col-md-2">
+              <label>Nivel</label>
+              <select formControlName="nivel" class="form-control">
+                <option value="" selected disabled>Seleccionar Nivel</option>
+                <option value="Basico 1">Basico 1</option>
+                <option value="Basico 2">Basico 2</option>
+                <option value="Basico 3">Basico 3</option>
+                <option value="Intermedio 1">Intermedio 1</option>
+                <option value="Intermedio 2">Intermedio 2</option>
+                <option value="Intermedio 2">Intermedio 3</option>
+                <option value="Avanzado 1">Avanzado 1</option>
+                <option value="Avanzado 2">Avanzado 2</option>
+                <option value="Avanzado 3">Avanzado 3</option>
+              </select>
+              <small *ngIf="validators('nivel')" class="text-danger"> Este campo es obligatorio. </small>
+            </div>
+            <div class="form-group col-12 col-sm-6 col-md-2">
+              <label>Sede</label>
+              <select formControlName="sede" class="form-control">
+                <option value="" selected disabled>Seleccionar Sede</option>
+                <option value="Lima">Lima</option>
+                <option value="Arequipa">Arequipa</option>
+                <option value="Trujillo">Trujillo</option>
+              </select>
+              <small *ngIf="validators('sede')" class="text-danger"> Este campo es obligatorio. </small>
+  
+            </div>
+            <div class="form-group col-12 col-sm-6 col-md-2">
+              <label>Precio</label>
+              <input formControlName="price" type="text" class="form-control" placeholder="Precio mensual" />
+              <small *ngIf="validators('price')" class="text-danger"> Este campo es obligatorio. </small>
+            </div>
+            <div class="form-group col-12 col-sm-6 col-md-2">
+                <label>Fecha inicio</label>
+                <input formControlName="start_date" [min]="date | date: 'yyyy-MM-dd'" type="date" class="form-control" />
+                <small *ngIf="validators('start_date')" class="text-danger"> Este campo es obligatorio. </small>
+            </div>
+            <div class="form-group col-12 col-sm-6 col-md-2">
+              <label>Fecha final</label>
+              <input formControlName="final_date" [min]="date | date: 'yyyy-MM-dd'" type="date" class="form-control" />
+              <small *ngIf="validators('final_date')" class="text-danger"> Este campo es obligatorio. </small>
+            </div>
+            <div class="form-group col-12 col-sm-6 col-md-2 d-flex align-items-end pb-1">
+              <button *ngIf="frequency.length == 0" disabled class="btn bg-gradient-success btn-block btn-sm">
+                  ACTUALIZAR<i class="fas fa-save ml-2"></i>
+              </button>
+              <button *ngIf="!load_btn && frequency.length != 0" type="submit" class="btn bg-gradient-success btn-block btn-sm">
+                  ACTUALIZAR<i class="fas fa-save ml-2"></i>
+              </button>
+              <button *ngIf="load_btn" type="button" class="btn bg-gradient-warning btn-block btn-sm" disabled>
+                  ACTUALIZANDO<i class="fas fa-sync fa-spin ml-2"></i>
+              </button>
+            </div>
+        </form>
+      </div>
+    </section>
+
+    <div class="row">
+
+      <div class="col-12 col-md-6">
+        <section class="card">
+          <div class="border-bottom p-3">
+            <h3 class="mb-0">Agregar Salón</h3>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center pb-3">
+              <label class="mb-0">Frecuencia Horaria</label>
+              <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_default">
+                Nuevo Salón <i class="fas fa-folder-plus ml-1"></i>
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered text-center mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-danger">Salón</th>
+                    <th class="text-danger">Aforo</th>
+                    <th class="text-danger">Días</th>
+                    <th class="text-danger">Horario</th>
+                    <th class="text-danger">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of frequency; let i = index">
+                    <td>{{ item.room }}</td>
+                    <td>{{ item.aforo }}</td>
+                    <td>
+                      <ng-container *ngFor="let subitem of item.frequency; let last = last">
+                        <span *ngIf="!last">{{ subitem.substr(0, 3) }}, </span>
+                        <span *ngIf="last">{{ subitem.substr(0, 3) }}</span>
+                      </ng-container>
+                    </td>
+                    <td>{{ item.start_time }} - {{ item.final_time }}</td>
+                    <td>
+                      <a (click)="delete_room(item._id, item.room)" class="text-danger pointer"> [Quitar] </a>
+                    </td>
+                  </tr>
+                </tbody>
+                <tbody *ngIf="frequency.length == 0">
+                  <tr>
+                    <td colspan="6" class="text-center">
+                      <span class="">No se encontraron resultados</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <section class="card">
+          <div class="border-bottom p-3">
+            <h3 class="mb-0">Asignar Instructor</h3>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center pb-2">
+              <div class="input-group mr-2">
+                <select [(ngModel)]="instructor_room.cycle_room" name="cycle_room" class="form-control">
+                  <option value="" selected="" disabled>Seleccionar Salón</option>
+                  <option [value]="item._id" *ngFor="let item of frequency">{{ item.room }} {{ item.start_time }} - {{ item.final_time }}</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <input type="text" class="form-control rounded-0" id="input_instructor" placeholder="Seleccionar un instructor" readonly>
+                <span class="input-group-append">
+                  <button data-toggle="modal" data-target="#modal_instructor" type="button" class="btn bg-gradient-primary"><i class="fas fa-search"></i></button>
+                </span>
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <button (click)="add_instructor()" type="button" class="btn bg-gradient-success btn-block btn-sm">
+                <i class="fas fa-arrow-down mr-2"></i>Agregar<i class="fas fa-arrow-down ml-2"></i>
+              </button>
+            </div>
+            <table class="table table-bordered text-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-danger">Salón</th>
+                  <th class="text-danger">Docente</th>
+                  <th class="text-danger">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of instructors_rooms">
+                  <td>{{ item.cycle_room?.room || 'NO DATA' }}</td>
+                  <td>{{ item.collaborator?.full_name | titlecase }}</td>
+                  <td><a (click)="del_instructor(item)" class="text-danger pointer"> [Quitar] </a></td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="instructors_rooms.length == 0">
+                <tr>
+                  <td colspan="6" class="text-center">
+                    <span class="">No se encontraron resultados</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+    </div>
+
+  </ng-container>
+</ng-container>
+   
+
+  
+<div class="modal fade" id="modal_default">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title mb-0">Registrar Nuevo Salón</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <select [(ngModel)]="room.room" name="room" class="form-control">
+              <option value="" selected="" disabled>Seleccionar Salón</option>
+              <option value="Virtual">Virtual</option>
+              <option value="Salon 1">Salon 1</option>
+              <option value="Salon 2">Salon 2</option>
+              <option value="Salon 3">Salon 3</option>
+              <option value="Salon 4">Salon 4</option>
+              <option value="Salon 5">Salon 5</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <input [(ngModel)]="room.aforo" name="aforo" type="number" class="form-control" placeholder="Aforo total" />
+          </div>
+          <div class="form-group row">
+            <div class="col-md-6">
+              <label>Hora inicio</label>
+              <input [(ngModel)]="room.start_time" name="start_time" type="time" class="form-control" />
+            </div>
+            <div class="col-md-6">
+              <label>Hora fin</label>
+              <input [(ngModel)]="room.final_time" name="final_time" type="time" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-md-6">
+              <div class="icheck-primary">
+                <input (change)="select_day($event)" type="checkbox" id="checkboxPrimary1" class="check" value="Lunes" />
+                <label for="checkboxPrimary1">Lunes</label>
+              </div>
+              <div class="icheck-primary">
+                <input (change)="select_day($event)" type="checkbox" id="checkboxPrimary2" class="check" value="Martes" />
+                <label for="checkboxPrimary2">Martes</label>
+              </div>
+              <div class="icheck-primary">
+                <input (change)="select_day($event)" type="checkbox" id="checkboxPrimary3" class="check" value="Miércoles" />
+                <label for="checkboxPrimary3">Miércoles</label>
+              </div>
+              <div class="icheck-primary">
+                <input (change)="select_day($event)" type="checkbox" id="checkboxPrimary4" class="check" value="Jueves" />
+                <label for="checkboxPrimary4">Jueves</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="icheck-primary">
+                <input (change)="select_day($event)" type="checkbox" id="checkboxPrimary5" class="check" value="Viernes" />
+                <label for="checkboxPrimary5">Viernes</label>
+              </div>
+              <div class="icheck-primary">
+                <input (change)="select_day($event)" type="checkbox" id="checkboxPrimary6" class="check" value="Sábado" />
+                <label for="checkboxPrimary6">Sábado</label>
+              </div>
+              <div class="icheck-primary">
+                <input (change)="select_day($event)" type="checkbox" id="checkboxPrimary7" class="check" value="Domingo" />
+                <label for="checkboxPrimary7">Domingo</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          <button (click)="add_item()" type="submit" class="btn btn-primary">Agregar</button>
+        </div>
+      </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_instructor">
+  <div class="modal-dialog modal-dialog-centered">
+    <form class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title mb-0">Seleccionar Instructor</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="min-height: 560px; overflow: auto;">
+        <div class="input-group mb-3">
+          <input [(ngModel)]="filter" name="filter" type="text" class="form-control rounded-0" placeholder="Buscar un instructor">
+          <span class="input-group-append">
+            <button (click)="search_instructors()" type="button" class="btn bg-gradient-primary"><i class="fas fa-search"></i></button>
+          </span>
+        </div>
+        <ng-container *ngIf="instructors.length == 0">
+          <div class="text-center p-2">
+            No se encontraron resultados.
+          </div>
+        </ng-container>
+        <ng-container *ngFor="let item of instructors">
+          <div class="d-flex mb-3">
+            <img [src]="path + item.image" class="img-size-50 mr-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <label class="mb-0">{{ item.full_name }}</label>
+                <span>{{ item.email }}</span>
+              </div>
+              <a (click)="select_instructor(item)" class="btn bg-gradient-success btn-sm mb-0">
+                <span class="d-none d-md-inline">Seleccionar</span>
+                <i class="fas fa-check d-md-none"></i>
+              </a>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </form>
+  </div>
+</div>
+  

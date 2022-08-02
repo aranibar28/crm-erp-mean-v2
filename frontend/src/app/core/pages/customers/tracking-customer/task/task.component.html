@@ -1,0 +1,161 @@
+<div class="card">
+
+  <div class="card-header">
+    <h3 class="card-title mb-0">Lista de Tareas</h3>
+    <div class="card-tools">
+      <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal_default">
+        Nueva Tarea
+      </button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="load_data">
+    <div class="text-center m-4">
+      <span>Cargando datos...</span>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!load_data">
+    <div *ngIf="this.tasks.length == 0" class="text-center m-4">
+      <span>No hay resultados que mostrar.</span>
+    </div>
+  </ng-container>
+
+  <div *ngIf="this.tasks.length >= 1">
+    <div class="card-body table-responsive">
+      <table class="table table-bordered text-center">
+        <thead>
+          <tr class="bg-dark">
+            <th style="width: 10px">#</th>
+            <th>Tarea</th>
+            <th>Asesor</th>
+            <th>Fecha</th>
+            <th style="width: 85px">Prioridad</th>
+            <th style="width: 85px">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of tasks | paginate: { itemsPerPage: 5, currentPage: p }">
+            <td>
+              <span *ngIf="item.type == 'Llamada'"><i class="fas fa-phone-alt"></i></span>
+              <span *ngIf="item.type == 'Correo'"><i class="fas fa-envelope"></i></span>
+              <span *ngIf="item.type == 'Venta'"><i class="fas fa-money-bill-alt"></i></span>
+              <span *ngIf="item.type == 'Otro'"><i class="fas fas fa-bookmark"></i></span>
+            </td>
+            <td>{{ item.title }}</td>
+            <td>{{ item.advisor?.last_name || "No asignado" | titlecase }}</td>
+            <td>{{ item.created_at | date }}</td>
+            <td>
+              <span *ngIf="item.priority == 'Alta'" class="badge bg-danger">Alta</span>
+              <span *ngIf="item.priority == 'Media'" class="badge bg-warning">Media</span>
+              <span *ngIf="item.priority == 'Ninguna'" class="badge bg-secondary" >Ninguna</span>
+            </td>
+            <td>
+              <button *ngIf="item.status" (click)="show_task(item)" class="btn btn-warning btn-xs">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button *ngIf="!item.status" (click)="make_task(item._id)" class="btn btn-success btn-xs">
+                <i class="fas fa-check"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer text-center">
+      <pagination-controls previousLabel="Anterior" nextLabel="Siguiente" (pageChange)="p = $event"></pagination-controls>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_default">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <form (ngSubmit)="register()" [formGroup]="myForm" class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title mb-0">Registrar Tarea</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Asesor</label>
+              <select formControlName="advisor" class="form-control" name="asesor_tarea">
+                <option value="" selected disabled>Seleccionar</option>
+                <option *ngFor="let item of advisors" [value]="item._id">
+                  {{ item.full_name }}
+                </option>
+              </select>
+              <small *ngIf="validators('advisor')" class="text-danger">
+                Este campo es obligatorio.
+              </small>
+            </div>
+            <div class="form-group">
+              <label>Tarea</label>
+              <input formControlName="title" type="text" class="form-control" placeholder="Ejemplo: Programar una cita"/>
+              <small *ngIf="validators('title')" class="text-danger">
+                Este campo es obligatorio.
+              </small>
+            </div>
+            <div class="form-group">
+              <label>Tipo</label>
+              <select formControlName="type" class="form-control">
+                <option value="" selected disabled>Seleccionar</option>
+                <option value="Llamada">Llamada</option>
+                <option value="Correo">Correo</option>
+                <option value="Venta">Venta</option>
+                <option value="Otro">Otro</option>
+              </select>
+              <small *ngIf="validators('type')" class="text-danger">
+                Este campo es obligatorio.
+              </small>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Fecha</label>
+              <input [min]="date | date: 'yyyy-MM-dd'" formControlName="date" type="date" class="form-control"/>
+              <small *ngIf="validators('date')" class="text-danger">
+                Este campo es obligatorio.
+              </small>
+            </div>
+            <div class="form-group">
+              <label>Hora</label>
+              <input formControlName="time" type="time" class="form-control" />
+              <small *ngIf="validators('time')" class="text-danger">
+                Este campo es obligatorio.
+              </small>
+            </div>
+            <div class="form-group">
+              <label>Prioridad </label>
+              <select formControlName="priority" class="form-control">
+                <option value="" selected disabled>Seleccionar</option>
+                <option value="Ninguna">Ninguna</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+              </select>
+              <small *ngIf="validators('priority')" class="text-danger">
+                Este campo es obligatorio.
+              </small>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="form-group">
+              <label>Nota </label>
+              <textarea formControlName="note" class="form-control" rows="3" placeholder="Alguna nota o información"></textarea>
+              <small *ngIf="validators('note')" class="text-danger">
+                Este campo es obligatorio.
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="submit" class="btn btn-primary">Registrar</button>
+      </div>
+    </form>
+  </div>
+</div>

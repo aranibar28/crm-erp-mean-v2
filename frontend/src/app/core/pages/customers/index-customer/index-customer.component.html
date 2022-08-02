@@ -1,0 +1,94 @@
+<div class="card">
+
+  <div class="d-flex justify-content-between align-items-center p-2 p-md-4">
+    <h3 class="card-title mb-0">Lista de Clientes</h3>
+    <div class="card-tools">
+      <div class="input-group input-group-sm" style="max-width: 250px">
+        <input [(ngModel)]="filter" name="filter" type="search" class="form-control" placeholder="Search" />
+        <div class="input-group-append">
+          <button (click)="search()" type="button" class="btn btn-default">
+            <i class="fas fa-search"></i>
+          </button>
+          <button routerLink="create" type="button" class="btn btn-info">
+            Nuevo<i class="fas fa-user-plus ml-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body table-responsive text-center px-0 pt-0">
+    <table class="table table-head-fixed text-nowrap">
+      <thead>
+        <tr>
+          <th class="w100">Foto</th>
+          <th><a class="pointer text-dark" (click)="sort('full_name')">Nombres<i class="fas fa-sort ml-2"></i></a></th>
+          <th><a class="pointer text-dark" (click)="sort('email')">Email<i class="fas fa-sort ml-2"></i></a></th>
+          <th>DNI</th>
+          <th>Tipo</th>
+          <th class="w100">Verificado</th>
+          <th class="w100"><a class="pointer text-dark" (click)="sort('created_at')">Creación<i class="fas fa-sort ml-2"></i></a></th>
+          <th class="w100">Estado</th>
+          <th class="w100">Acciones</th>
+        </tr>
+      </thead>
+
+      <ng-container *ngIf="load_data">
+        <tbody>
+          <td class="text-center text-muted" colspan="100%">
+            <span>Cargando...</span>
+          </td>
+        </tbody>
+      </ng-container>
+
+      <ng-container *ngIf="!load_data">
+        <tbody class="text-center" *ngIf="this.customers.length === 0">
+          <td class="text-center text-muted" colspan="100%">
+            <img src="assets/img/template/search.gif" style="width: 300px" />
+            <div>
+              <span>No hay ningún registro que mostrar.</span>
+            </div>
+          </td>
+        </tbody>
+        <tbody>
+          <tr
+            *ngFor="let item of customers | paginate: { itemsPerPage: 5, currentPage: p }">
+            <td><img [src]="path + item.image" class="img-size-50" /></td>
+            <td>
+              <a [routerLink]="'tracking/' + item._id">
+                {{ item.full_name | titlecase }}
+              </a>
+            </td>
+            <td>{{ item.email }}</td>
+            <td>{{ item.dni }}</td>
+            <td>
+              <span *ngIf="item.type == 'Prospecto'" class="badge badge-warning" >{{ item.type }}</span>
+              <span *ngIf="item.type == 'Socio'" class="badge badge-primary">{{ item.type }}</span>
+            </td>
+            <td>
+              <span *ngIf="item.verify" class="badge badge-success">Verificado</span>
+              <span *ngIf="!item.verify" class="badge badge-danger">No Verificado</span>
+            </td>
+            <td>{{ item.created_at | date }}</td>
+            <td>
+              <span (click)="change_status(item._id, item.status)" *ngIf="item.status" class="badge badge-success p-2 pointer">Activo</span>
+              <span (click)="change_status(item._id, item.status)" *ngIf="!item.status" class="badge badge-danger p-2 pointer">Inactivo</span>
+            </td>
+            <td>
+              <button [routerLink]="['update', item._id]" class="btn btn-warning btn-sm mr-2">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button (click)="delete_data(item._id, item.full_name)" class="btn btn-danger btn-sm">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </ng-container>
+    </table>
+  </div>
+
+  <div class="card-footer clearfix d-flex justify-content-end" style="display: block">
+    <pagination-controls previousLabel="Anterior" nextLabel="Siguiente" (pageChange)="p = $event"></pagination-controls>
+  </div>
+</div>
